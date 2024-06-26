@@ -1,13 +1,7 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Typography, Box } from '@mui/material';
 
-const models = [
-  { value: 'linearRegression', name: 'Linear Regression', description: 'Best for predicting a continuous outcome based on one or more features.' },
-  { value: 'logisticRegression', name: 'Logistic Regression', description: 'Ideal for binary classification problems.' },
-  { value: 'neuralNetwork', name: 'Neural Network', description: 'Versatile model capable of learning complex patterns in data.' },
-];
-
-function ModelSelector({ model, setModel }) {
+function ModelSelector({ models, selectedModel, onSelectModel }) {
   return (
     <Box>
       <FormControl fullWidth>
@@ -15,18 +9,18 @@ function ModelSelector({ model, setModel }) {
         <Select
           labelId="model-select-label"
           id="model-select"
-          value={model}
+          value={selectedModel}
           label="Select Model"
-          onChange={(e) => setModel(e.target.value)}
+          onChange={(e) => onSelectModel(e.target.value)}
         >
-          {models.map((m) => (
-            <MenuItem key={m.value} value={m.value}>{m.name}</MenuItem>
+          {models.map((model) => (
+            <MenuItem key={model} value={model}>{model.toUpperCase()}</MenuItem>
           ))}
         </Select>
       </FormControl>
-      {model && (
+      {selectedModel && (
         <Typography variant="body2" sx={{ mt: 2 }}>
-          {models.find(m => m.value === model).description}
+          You selected: {selectedModel.toUpperCase()}
         </Typography>
       )}
     </Box>

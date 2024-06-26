@@ -1,117 +1,55 @@
 import React from 'react';
-import { TextField, Box, Typography, Slider, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Box, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
-function ModelConfig({ model, config, setConfig }) {
+const modelConfigs = {
+  mlp: [
+    { name: 'learningRate', label: 'Learning Rate', type: 'number', props: { step: 0.001, min: 0 } },
+    { name: 'epochs', label: 'Epochs', type: 'number', props: { step: 1, min: 1 } },
+    { name: 'hiddenLayers', label: 'Hidden Layers', type: 'number', props: { step: 1, min: 1 } },
+    { name: 'neuronsPerLayer', label: 'Neurons per Layer', type: 'number', props: { step: 1, min: 1 } },
+    { name: 'activationFunction', label: 'Activation Function', type: 'select', options: ['relu', 'sigmoid', 'tanh'] }
+  ],
+  // 可以在这里添加其他模型类型的配置
+};
+
+function ModelConfig({ modelType, config, setConfig }) {
   const handleChange = (e) => {
-    setConfig({ ...config, [e.target.name]: e.target.value });
+    const value = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+    setConfig({ ...config, [e.target.name]: value });
   };
 
-  const handleSliderChange = (name) => (event, newValue) => {
-    setConfig({ ...config, [name]: newValue });
-  };
+  const configFields = modelConfigs[modelType] || [];
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">Model Configuration</Typography>
-      
-      {model === 'linearRegression' && (
-        <>
-          <TextField
-            name="learningRate"
-            label="Learning Rate"
-            type="number"
-            value={config.learningRate || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{ inputProps: { min: 0, max: 1, step: 0.01 } }}
-          />
-          <TextField
-            name="iterations"
-            label="Iterations"
-            type="number"
-            value={config.iterations || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{ inputProps: { min: 1, step: 1 } }}
-          />
-        </>
-      )}
-      
-      {model === 'logisticRegression' && (
-        <>
-          <TextField
-            name="learningRate"
-            label="Learning Rate"
-            type="number"
-            value={config.learningRate || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{ inputProps: { min: 0, max: 1, step: 0.01 } }}
-          />
-          <TextField
-            name="iterations"
-            label="Iterations"
-            type="number"
-            value={config.iterations || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{ inputProps: { min: 1, step: 1 } }}
-          />
-          <FormControl fullWidth>
-            <InputLabel>Regularization</InputLabel>
+      <Typography variant="h6">Model Configuration: {modelType.toUpperCase()}</Typography>
+      {configFields.map((field) => (
+        field.type === 'select' ? (
+          <FormControl key={field.name} fullWidth>
+            <InputLabel>{field.label}</InputLabel>
             <Select
-              name="regularization"
-              value={config.regularization || ''}
+              name={field.name}
+              value={config[field.name] || ''}
               onChange={handleChange}
-              label="Regularization"
             >
-              <MenuItem value="none">None</MenuItem>
-              <MenuItem value="l1">L1</MenuItem>
-              <MenuItem value="l2">L2</MenuItem>
+              {field.options.map((option) => (
+                <MenuItem key={option} value={option}>{option}</MenuItem>
+              ))}
             </Select>
           </FormControl>
-        </>
-      )}
-      
-      {model === 'neuralNetwork' && (
-        <>
-          <Typography gutterBottom>Hidden Layers</Typography>
-          <Slider
-            name="hiddenLayers"
-            value={config.hiddenLayers || 1}
-            onChange={handleSliderChange('hiddenLayers')}
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={1}
-            max={5}
+        ) : (
+          <TextField
+            key={field.name}
+            name={field.name}
+            label={field.label}
+            type={field.type}
+            value={config[field.name] || ''}
+            onChange={handleChange}
+            fullWidth
+            {...field.props}
           />
-          <Typography gutterBottom>Neurons per Layer</Typography>
-          <Slider
-            name="neuronsPerLayer"
-            value={config.neuronsPerLayer || 10}
-            onChange={handleSliderChange('neuronsPerLayer')}
-            valueLabelDisplay="auto"
-            step={5}
-            marks
-            min={5}
-            max={100}
-          />
-          <FormControl fullWidth>
-            <InputLabel>Activation Function</InputLabel>
-            <Select
-              name="activationFunction"
-              value={config.activationFunction || ''}
-              onChange={handleChange}
-              label="Activation Function"
-            >
-              <MenuItem value="relu">ReLU</MenuItem>
-              <MenuItem value="sigmoid">Sigmoid</MenuItem>
-              <MenuItem value="tanh">Tanh</MenuItem>
-            </Select>
-          </FormControl>
-        </>
-      )}
+        )
+      ))}
     </Box>
   );
 }

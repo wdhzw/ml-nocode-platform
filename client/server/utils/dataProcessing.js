@@ -4,8 +4,9 @@ const tf = require('@tensorflow/tfjs-node');
 async function preprocessData(filePath) {
   const jsonArray = await csv().fromFile(filePath);
 
-  const features = jsonArray.map(row => [Number(row.area)]);
-  const labels = jsonArray.map(row => Number(row.price));
+  // 假设最后一列是目标变量，其他都是特征
+  const features = jsonArray.map(row => Object.values(row).slice(0, -1).map(Number));
+  const labels = jsonArray.map(row => Number(Object.values(row).slice(-1)[0]));
 
   const xs = tf.tensor2d(features);
   const ys = tf.tensor2d(labels, [labels.length, 1]);

@@ -1,0 +1,1 @@
+{"name":"s","modelType":"mlp","config":{"learningRate":0.01,"epochs":1000,"hiddenLayers":1,"neuronsPerLayer":10,"activationFunction":"relu"}}
